@@ -185,6 +185,23 @@ TEST(validator_test, input_file)
     }
 }
 
+TEST(validator_test, input_file_single_hyphen)
+{
+    // single hyphen must be excepted even if it doesn't have a file extension
+    {
+        std::string option_value{};
+
+        char const * argv[] = {"./parser_test", "-p", "-"};
+        sharg::parser parser{"test_parser", 3, argv, sharg::update_notifications::off};
+        parser.add_option(option_value,
+                          sharg::config{.short_id = 'p', .validator = sharg::input_file_validator{{"txt"}}});
+
+        EXPECT_NO_THROW(parser.parse());
+
+        EXPECT_EQ(option_value, "-"); // the developer can now handle std::cin
+    }
+}
+
 TEST(validator_test, output_file)
 {
     sharg::test::tmp_filename tmp_name{"testbox.fasta"};

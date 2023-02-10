@@ -1073,3 +1073,29 @@ TEST(parse_test, container_default)
         EXPECT_TRUE(option_values == (std::vector<int>{2, 1, 3}));
     }
 }
+
+TEST(parse_test, single_hyphen)
+{
+    {
+        std::string option_value{};
+
+        char const * argv[] = {"./parser_test", "-p", "-"};
+        sharg::parser parser{"test_parser", 3, argv, sharg::update_notifications::off};
+        parser.add_option(option_value, sharg::config{.short_id = 'p'});
+
+        EXPECT_NO_THROW(parser.parse());
+
+        EXPECT_EQ(option_value, "-"); // the developer can now handle std::cin
+    }
+    {
+        std::string option_value{};
+
+        char const * argv[] = {"./parser_test", "-"};
+        sharg::parser parser{"test_parser", 2, argv, sharg::update_notifications::off};
+        parser.add_positional_option(option_value, sharg::config{});
+
+        EXPECT_NO_THROW(parser.parse());
+
+        EXPECT_EQ(option_value, "-"); // the developer can now handle std::cin
+    }
+}
